@@ -1,0 +1,313 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Data Structures Visualizer</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #eef2ff;
+  color: #1e293b;
+}
+header {
+  background: #172554;
+  color: white;
+  text-align: center;
+  padding: 25px 10px;
+}
+nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  background: white;
+  padding: 10px;
+  gap: 6px;
+}
+button {
+  padding: 11px 14px;
+  border: 0;
+  border-radius: 6px;
+  background: #2563eb;
+  color: white;
+  cursor: pointer;
+  margin: 4px;
+}
+nav button { background: #334155; }
+button:hover { opacity: .85; }
+main {
+  max-width: 850px;
+  margin: 25px auto;
+  padding: 0 14px;
+}
+.panel {
+  background: white;
+  padding: 22px;
+  border-radius: 12px;
+  box-shadow: 0 3px 12px #0001;
+}
+input {
+  padding: 12px;
+  width: 90%;
+  max-width: 350px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  margin: 10px 0;
+  font-size: 16px;
+}
+.display {
+  margin-top: 20px;
+  background: #f8fafc;
+  border: 1px dashed #94a3b8;
+  padding: 15px;
+  border-radius: 8px;
+  min-height: 70px;
+}
+.items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 15px;
+  align-items: center;
+}
+.node {
+  padding: 13px 16px;
+  background: #dbeafe;
+  border: 2px solid #3b82f6;
+  color: #1d4ed8;
+  border-radius: 7px;
+  font-weight: bold;
+}
+.hidden { display: none; }
+#message { color: #15803d; margin-top: 15px; }
+footer {
+  text-align: center;
+  padding: 20px;
+  color: #64748b;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>Data Structures Visualizer</h1>
+  <p>DS Mini Project</p>
+</header>
+
+<nav>
+  <button onclick="showTab('stack')">Stack</button>
+  <button onclick="showTab('queue')">Queue</button>
+  <button onclick="showTab('list')">Linked List</button>
+  <button onclick="showTab('sort')">Sorting</button>
+</nav>
+
+<main>
+<div class="panel">
+
+<section id="stack">
+<h2>Stack Visualizer</h2>
+<p>Stack follows LIFO: Last In, First Out.</p>
+<input id="stackInput" placeholder="Enter a value">
+<br>
+<button onclick="pushStack()">Push</button>
+<button onclick="popStack()">Pop</button>
+<button onclick="peekStack()">Peek</button>
+<button onclick="clearStack()">Clear</button>
+<div class="display">
+<strong>Top → Bottom</strong>
+<div class="items" id="stackView"></div>
+</div>
+</section>
+
+<section id="queue" class="hidden">
+<h2>Queue Visualizer</h2>
+<p>Queue follows FIFO: First In, First Out.</p>
+<input id="queueInput" placeholder="Enter a value">
+<br>
+<button onclick="enqueue()">Enqueue</button>
+<button onclick="dequeue()">Dequeue</button>
+<button onclick="clearQueue()">Clear</button>
+<div class="display">
+<strong>Front → Rear</strong>
+<div class="items" id="queueView"></div>
+</div>
+</section>
+
+<section id="list" class="hidden">
+<h2>Linked List Visualizer</h2>
+<p>Insert and delete nodes in a linked list.</p>
+<input id="listInput" placeholder="Enter a value">
+<br>
+<button onclick="addNode()">Insert End</button>
+<button onclick="deleteNode()">Delete First</button>
+<button onclick="clearList()">Clear</button>
+<div class="display">
+<div class="items" id="listView"></div>
+</div>
+</section>
+
+<section id="sort" class="hidden">
+<h2>Sorting Visualizer</h2>
+<p>Bubble Sort algorithm sorts numbers in ascending order.</p>
+<input id="sortInput" value="45, 12, 78, 23, 9" placeholder="Example: 5, 2, 8, 1">
+<br>
+<button onclick="sortNumbers()">Sort Numbers</button>
+<div class="display">
+<div class="items" id="sortView"></div>
+</div>
+</section>
+
+<p id="message">Welcome! Choose a data structure.</p>
+
+</div>
+</main>
+
+<footer>
+Data Structures Mini Project | HTML, CSS & JavaScript
+</footer>
+
+<script>
+let stack = [];
+let queue = [];
+let linkedList = [];
+
+function showTab(id) {
+  document.querySelectorAll("main section").forEach(section => {
+    section.classList.add("hidden");
+  });
+  document.getElementById(id).classList.remove("hidden");
+  msg("Opened " + id.toUpperCase() + " visualizer.");
+}
+
+function msg(text) {
+  document.getElementById("message").textContent = text;
+}
+
+function draw(id, values, reverse = false) {
+  const view = document.getElementById(id);
+  view.replaceChildren();
+  const items = reverse ? [...values].reverse() : values;
+
+  items.forEach(value => {
+    const node = document.createElement("div");
+    node.className = "node";
+    node.textContent = value;
+    view.appendChild(node);
+  });
+}
+
+function pushStack() {
+  const input = document.getElementById("stackInput");
+  const value = input.value.trim();
+  if (!value) return msg("Please enter a value.");
+  if (stack.length >= 20) return msg("Stack is full (maximum 20).");
+  stack.push(value);
+  input.value = "";
+  draw("stackView", stack, true);
+  msg(value + " pushed onto stack.");
+}
+
+function popStack() {
+  if (!stack.length) return msg("Stack is empty!");
+  const value = stack.pop();
+  draw("stackView", stack, true);
+  msg(value + " popped from stack.");
+}
+
+function peekStack() {
+  msg(stack.length ? "Top element: " + stack[stack.length - 1] : "Stack is empty!");
+}
+
+function clearStack() {
+  stack = [];
+  draw("stackView", stack);
+  msg("Stack cleared.");
+}
+
+function enqueue() {
+  const input = document.getElementById("queueInput");
+  const value = input.value.trim();
+  if (!value) return msg("Please enter a value.");
+  if (queue.length >= 20) return msg("Queue is full (maximum 20).");
+  queue.push(value);
+  input.value = "";
+  draw("queueView", queue);
+  msg(value + " added to queue.");
+}
+
+function dequeue() {
+  if (!queue.length) return msg("Queue is empty!");
+  const value = queue.shift();
+  draw("queueView", queue);
+  msg(value + " removed from queue.");
+}
+
+function clearQueue() {
+  queue = [];
+  draw("queueView", queue);
+  msg("Queue cleared.");
+}
+
+function addNode() {
+  const input = document.getElementById("listInput");
+  const value = input.value.trim();
+  if (!value) return msg("Please enter a value.");
+  linkedList.push(value);
+  input.value = "";
+  draw("listView", linkedList);
+  msg("Node inserted at end.");
+}
+
+function deleteNode() {
+  if (!linkedList.length) return msg("Linked list is empty!");
+  const value = linkedList.shift();
+  draw("listView", linkedList);
+  msg("Deleted node: " + value);
+}
+
+function clearList() {
+  linkedList = [];
+  draw("listView", linkedList);
+  msg("Linked list cleared.");
+}
+
+function sortNumbers() {
+  const input = document.getElementById("sortInput").value.trim();
+  if (!input) return msg("Enter numbers separated by commas.");
+
+  const values = input.split(",").map(v => v.trim());
+
+  if (values.some(v => v === "" || !Number.isFinite(Number(v)))) {
+    return msg("Please enter valid numbers separated by commas.");
+  }
+
+  const numbers = values.map(Number);
+  if (numbers.length > 50) return msg("Enter at most 50 numbers.");
+
+  // Bubble Sort
+  for (let i = 0; i < numbers.length - 1; i++) {
+    for (let j = 0; j < numbers.length - i - 1; j++) {
+      if (numbers[j] > numbers[j + 1]) {
+        const temp = numbers[j];
+        numbers[j] = numbers[j + 1];
+        numbers[j + 1] = temp;
+      }
+    }
+  }
+
+  draw("sortView", numbers);
+  msg("Bubble Sort completed successfully!");
+}
+
+draw("stackView", stack);
+draw("queueView", queue);
+draw("listView", linkedList);
+sortNumbers();
+</script>
+
+</body>
+</html>
